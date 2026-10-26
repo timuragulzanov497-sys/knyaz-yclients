@@ -110,7 +110,7 @@
       .step-value{font-size:14px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       .step.done .step-value{color:var(--brass)}
       .chev{flex:none;color:var(--faint);transition:transform .25s ease}
-      .step.open .chev{transform:rotate(180deg)}
+      .step.open > .step-head .chev{transform:rotate(180deg)}
       .step-body{display:none;padding:2px 18px 18px}
       .step.open .step-body{display:block}
 
@@ -232,6 +232,14 @@
       .svc-gbody .svc{background:var(--panel);margin-top:8px}
       .svc-gbody .svc:first-child{margin-top:2px}
       .svc-gbody .svc.sel{background:var(--panel-3)}
+
+      /* services step: explicit next button (no auto-advance) */
+      .svc-next{
+        display:block;width:100%;margin-top:14px;padding:14px;
+        background:var(--brass);color:var(--brass-ink);border:0;border-radius:8px;
+        font-size:15.5px;font-weight:700;letter-spacing:.02em;min-height:50px;
+      }
+      .svc-next:disabled{background:var(--panel-3);color:var(--faint);cursor:default}
 
       /* master category cards */
       .cat-card{margin-top:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);padding:12px}
@@ -365,6 +373,7 @@
           max-width:1140px;margin:0 auto;padding:30px 24px 56px;
           display:grid;grid-template-columns:400px minmax(0,1fr);
           grid-template-areas:"side main" "extra main";
+          grid-template-rows:auto 1fr;
           column-gap:30px;align-items:start;
         }
         .side{display:block;grid-area:side;position:sticky;top:24px}
@@ -439,7 +448,7 @@
       <main class="card" id="bookCard">
         <div id="flowView">
           <h2 class="card-title">Онлайн-запись</h2>
-          <p class="card-sub">Начните с услуг — затем мастер и время. Разделы можно менять в любом порядке, итог пересчитается сам.</p>
+          <p class="card-sub">Выберите услуги, мастера и удобное время</p>
 
           <div class="notice" id="notice" role="status" hidden></div>
 
@@ -1046,7 +1055,14 @@
           });
           html += '</div></div>';
         });
+        var anySvc = selectedServices().length>0;
+        html += '<button type="button" class="svc-next" id="svcNext"'+(anySvc?"":" disabled")+'>Далее</button>';
         $("svcList").innerHTML = html;
+        $("svcNext").addEventListener("click", function(){
+          if(!selectedServices().length) return;
+          openStep("stepMaster");
+          $("stepMaster").scrollIntoView({behavior:"smooth", block:"nearest"});
+        });
         var gbtns = $("svcList").querySelectorAll("[data-svcgroup]");
         for(var gi=0; gi<gbtns.length; gi++){
           gbtns[gi].addEventListener("click", function(){
@@ -1059,10 +1075,10 @@
         for(var i=0;i<btns.length;i++){
           btns[i].addEventListener("click", function(){
             var id = this.getAttribute("data-svc");
-            var wasEmpty = selectedServices().length===0;
             state.services[id] = !state.services[id];
             onSelectionChanged("services");
-            if(wasEmpty && state.services[id]) openStep("stepMaster");
+            /* выбор услуг не уводит дальше сам: шаг остаётся открытым,
+               переход — по кнопке «Далее» под списком */
           });
         }
       }
