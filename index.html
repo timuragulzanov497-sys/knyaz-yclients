@@ -1,0 +1,1663 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" type="image/jpeg" href="assets/logo.jpg" />
+    <title>Князь — онлайн-запись</title>
+    <style>
+      :root{
+        --bg:#0c0a08;
+        --panel:#16120e;
+        --panel-2:#1d1813;
+        --panel-3:#241d16;
+        --line:#2e2620;
+        --line-soft:#241d17;
+        --ink:#f0e7d6;
+        --muted:#d8c7a8;
+        --faint:#c4ad80;
+        --brass:#c49a5c;
+        --brass-deep:#9a773c;
+        --brass-ink:#171208;
+        --danger:#e89a85;
+        --ok:#b5d3a4;
+        --serif:Georgia,"Times New Roman",serif;
+        --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+      }
+      *{box-sizing:border-box}
+      html{scroll-padding-bottom:112px}
+      html,body{margin:0;padding:0}
+      body{
+        background:
+          radial-gradient(900px 480px at 50% -120px, rgba(196,154,92,.10), rgba(12,10,8,0) 60%),
+          var(--bg);
+        color:var(--ink);
+        font-family:var(--sans);
+        -webkit-font-smoothing:antialiased;
+        min-height:100vh;
+      }
+      body.has-bar{padding-bottom:96px}
+      button{font-family:inherit;cursor:pointer}
+      :focus-visible{outline:2px solid var(--brass);outline-offset:2px;border-radius:4px}
+      @media (prefers-reduced-motion: reduce){
+        *{transition:none !important;animation:none !important;scroll-behavior:auto !important}
+      }
+
+      .layout{max-width:470px;margin:0 auto;padding:0 0 40px}
+      .side,.extra,.sidewrap{display:contents}
+
+      /* ---------- header ---------- */
+      .cover{position:relative;height:196px;overflow:hidden}
+      .cover img{width:100%;height:100%;object-fit:cover;object-position:center 62%;display:block;filter:saturate(.82) brightness(.9)}
+      .cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(12,10,8,.18) 0%,rgba(12,10,8,.05) 38%,rgba(12,10,8,.88) 88%,var(--bg) 100%)}
+      .head{position:relative;margin-top:-58px;padding:0 20px;text-align:center}
+      .medal{
+        width:88px;height:88px;margin:0 auto;border-radius:50%;overflow:hidden;
+        background:#fff;
+        border:1px solid var(--brass);
+        box-shadow:0 0 0 5px rgba(12,10,8,.92), 0 0 0 6px rgba(196,154,92,.35), 0 14px 30px rgba(0,0,0,.5);
+      }
+      .medal img{width:100%;height:100%;object-fit:contain;display:block}
+      h1.name{font-family:var(--serif);font-weight:400;font-size:34px;letter-spacing:.14em;text-transform:uppercase;margin:16px 0 2px}
+      .kind{font-size:12px;letter-spacing:.28em;text-transform:uppercase;color:var(--brass);margin:0}
+      .rating{margin:12px 0 0;font-size:14px;color:var(--muted)}
+      .rating .star{color:var(--brass);font-size:15px}
+      .rating b{color:var(--ink);font-weight:600}
+      .meta{margin:14px auto 0;max-width:340px;display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--muted)}
+      .meta .row{display:flex;align-items:center;justify-content:center;gap:8px}
+      .meta svg{flex:none;color:var(--brass)}
+      .meta a{color:var(--ink);text-decoration:none;border-bottom:1px dotted var(--brass-deep)}
+      .open-now{color:var(--ok)}
+      .closed-now{color:var(--danger)}
+
+      /* quick actions */
+      .actions{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 14px 0}
+      .action{
+        display:flex;flex-direction:column;align-items:center;gap:6px;
+        background:var(--panel);border:1px solid var(--line);border-radius:10px;
+        color:var(--ink);text-decoration:none;font-size:13px;font-weight:600;
+        padding:11px 4px 9px;min-height:64px;justify-content:center;text-align:center;
+      }
+      .action svg{color:var(--brass)}
+      .action:active{background:var(--panel-3)}
+
+      /* ---------- booking card ---------- */
+      .card{
+        margin:22px 14px 0;background:var(--panel);
+        border:1px solid var(--line);border-radius:10px;overflow:hidden;
+      }
+      .card-title{
+        font-family:var(--serif);font-size:19px;font-weight:400;letter-spacing:.04em;
+        padding:16px 18px 4px;margin:0;
+      }
+      .card-sub{padding:0 18px 12px;margin:0;font-size:14.5px;color:var(--muted);line-height:1.5}
+      .step{border-top:1px solid var(--line-soft)}
+      .step:first-of-type{border-top:1px solid var(--line)}
+      .step-head{
+        width:100%;background:none;border:0;color:var(--ink);text-align:left;
+        display:flex;align-items:center;gap:13px;padding:15px 18px;min-height:56px;
+      }
+      .step-num{
+        flex:none;width:27px;height:27px;border-radius:50%;
+        border:1px solid var(--brass-deep);color:var(--brass);
+        display:flex;align-items:center;justify-content:center;
+        font-family:var(--serif);font-size:14px;background:rgba(196,154,92,.07);
+      }
+      .step.done .step-num{background:var(--brass);color:var(--brass-ink);border-color:var(--brass)}
+      .step-main{flex:1;min-width:0}
+      .step-label{font-size:15.5px;font-weight:600;letter-spacing:.01em}
+      .step-value{font-size:14px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .step.done .step-value{color:var(--brass)}
+      .chev{flex:none;color:var(--faint);transition:transform .25s ease}
+      .step.open > .step-head .chev{transform:rotate(180deg)}
+      .step-body{display:none;padding:2px 18px 18px}
+      .step.open .step-body{display:block}
+
+      /* masters */
+      .opt{
+        width:100%;display:flex;align-items:center;gap:12px;text-align:left;
+        background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+        color:var(--ink);padding:11px 13px;margin-top:9px;font-size:15px;min-height:56px;
+      }
+      .opt:first-child{margin-top:4px}
+      .opt .avatar{
+        flex:none;width:42px;height:42px;border-radius:50%;
+        border:1px solid var(--brass-deep);background:radial-gradient(circle at 34% 28%, #2b2115, #171208 74%);
+        color:var(--brass);font-family:var(--serif);font-size:17px;
+        display:flex;align-items:center;justify-content:center;
+      }
+      .opt .who{flex:1;min-width:0}
+      .opt .who .n{font-weight:600}
+      .opt .who .d{font-size:13.5px;color:var(--muted);margin-top:1px}
+      .opt .radio{flex:none;width:20px;height:20px;border-radius:50%;border:1.5px solid var(--faint);position:relative}
+      .opt.sel{border-color:var(--brass);background:var(--panel-3);box-shadow:0 0 0 1px var(--brass)}
+      .opt.sel .radio{border-color:var(--brass)}
+      .opt.sel .radio::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--brass)}
+
+      /* dates */
+      .dates{display:flex;gap:7px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+      .dates::-webkit-scrollbar{display:none}
+      .day{
+        flex:none;width:58px;min-height:62px;padding:8px 0 7px;border-radius:8px;text-align:center;
+        background:var(--panel-2);border:1px solid var(--line);color:var(--muted);position:relative;
+      }
+      .day .dw{font-size:11.5px;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap}
+      .day .dn{font-size:17px;font-weight:600;color:var(--ink);margin-top:2px;font-family:var(--serif)}
+      .day .dm{font-size:11.5px;margin-top:1px}
+      .day.sel{border-color:var(--brass);background:var(--brass);box-shadow:0 0 0 2px rgba(196,154,92,.45)}
+      .day.sel .dw,.day.sel .dm{color:var(--brass-ink)}
+      .day.sel .dn{color:var(--brass-ink)}
+      .day.full{opacity:.45}
+      .day.full .dn{text-decoration:line-through}
+      .day .free-dot{
+        position:absolute;left:50%;bottom:5px;transform:translateX(-50%);
+        width:5px;height:5px;border-radius:50%;background:var(--ok);
+      }
+      .day.sel .free-dot{background:var(--brass-ink)}
+      .slots-group{font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);margin:13px 0 8px;font-weight:600}
+      .slots{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+      .slot{
+        min-height:44px;padding:9px 0;border-radius:7px;border:1px solid var(--line);
+        background:var(--panel-2);color:var(--ink);font-size:14.5px;font-variant-numeric:tabular-nums;
+      }
+      .slot.sel{background:var(--brass);border-color:var(--brass);color:var(--brass-ink);font-weight:700;box-shadow:0 0 0 2px rgba(196,154,92,.45)}
+      .slot:disabled{opacity:.32;cursor:default;text-decoration:line-through;background:transparent}
+      .slots-empty{font-size:14px;color:var(--muted);padding:4px 0 2px;line-height:1.55}
+      .nearest{
+        margin-top:10px;width:100%;padding:12px 13px;border-radius:8px;text-align:left;
+        background:rgba(196,154,92,.09);border:1px solid var(--brass-deep);color:var(--ink);font-size:14px;line-height:1.45;
+      }
+      .nearest b{color:var(--brass)}
+      .hint{font-size:14px;color:var(--faint);margin-top:11px;line-height:1.5}
+
+      /* loading / error states */
+      .skel{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding-top:6px}
+      .skel i{
+        display:block;height:44px;border-radius:7px;background:var(--panel-2);
+        animation:pulse 1.1s ease-in-out infinite;
+      }
+      .skel i:nth-child(2n){animation-delay:.15s}
+      .skel i:nth-child(3n){animation-delay:.3s}
+      @keyframes pulse{0%,100%{opacity:.45}50%{opacity:1}}
+      .load-note{font-size:14px;color:var(--muted);margin-top:10px}
+      .load-err{
+        border:1px solid rgba(232,154,133,.45);background:rgba(232,154,133,.07);
+        border-radius:8px;padding:13px 14px;margin-top:6px;font-size:14px;line-height:1.5;color:var(--ink);
+      }
+      .load-err p{margin:0 0 10px}
+      .retry-btn{
+        background:none;border:1px solid var(--brass-deep);color:var(--brass);
+        border-radius:7px;padding:10px 16px;font-size:14px;font-weight:600;min-height:44px;
+      }
+
+      /* notice (selection changed under the user) */
+      .notice{
+        margin:12px 18px 0;border:1px solid var(--brass-deep);border-radius:8px;
+        background:rgba(196,154,92,.09);padding:12px 14px;font-size:14px;line-height:1.55;color:var(--ink);
+      }
+      .notice[hidden]{display:none}
+
+      /* bundle hint: selected services are cheaper as a combo */
+      .bundle-hint{
+        margin-top:12px;border:1px solid var(--brass-deep);border-radius:8px;
+        background:rgba(196,154,92,.09);padding:12px 14px;font-size:14px;line-height:1.55;color:var(--ink);
+      }
+      .bundle-hint p{margin:0 0 10px}
+      .bundle-swap{
+        background:none;border:1px solid var(--brass-deep);color:var(--brass);
+        border-radius:7px;padding:10px 16px;font-size:14px;font-weight:600;min-height:44px;
+      }
+
+      /* services */
+      .svc{
+        width:100%;display:flex;align-items:center;gap:12px;text-align:left;
+        background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+        color:var(--ink);padding:12px 13px;margin-top:9px;min-height:56px;
+      }
+      .svc:first-child{margin-top:4px}
+      .svc .inf{flex:1;min-width:0}
+      .svc .n{font-size:15px;font-weight:600}
+      .svc .d{font-size:12.5px;color:var(--muted);margin-top:2px}
+      .svc .p{flex:none;font-family:var(--serif);font-size:16px;color:var(--brass);white-space:nowrap}
+      .svc .box{
+        flex:none;width:22px;height:22px;border-radius:6px;border:1.5px solid var(--faint);
+        display:flex;align-items:center;justify-content:center;color:var(--brass-ink);
+      }
+      .svc .box svg{opacity:0}
+      .svc.sel{border-color:var(--brass);background:var(--panel-3);box-shadow:0 0 0 1px var(--brass)}
+      .svc.sel .box{background:var(--brass);border-color:var(--brass)}
+      .svc.sel .box svg{opacity:1}
+      .svc:disabled{opacity:.45;cursor:default}
+      .svc:disabled .box{background:none}
+
+      /* service groups (accordion) */
+      .svc-group{margin-top:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);overflow:hidden}
+      .svc-ghead{width:100%;display:flex;align-items:center;gap:10px;background:none;border:0;color:var(--ink);padding:13px 14px;min-height:50px;text-align:left}
+      .svc-gname{flex:1;font-size:15.5px;font-weight:600}
+      .svc-gcount{font-size:13px;color:var(--brass);font-weight:600;white-space:nowrap}
+      .svc-ghead .chev{flex:none;color:var(--faint);transition:transform .25s ease}
+      .svc-group.open .svc-ghead .chev{transform:rotate(180deg)}
+      .svc-gbody{display:none;padding:0 10px 10px}
+      .svc-group.open .svc-gbody{display:block}
+      .svc-gbody .svc{background:var(--panel);margin-top:8px}
+      .svc-gbody .svc:first-child{margin-top:2px}
+      .svc-gbody .svc.sel{background:var(--panel-3)}
+
+      /* services step: explicit next button (no auto-advance) */
+      .svc-next{
+        display:block;width:100%;margin-top:14px;padding:14px;
+        background:var(--brass);color:var(--brass-ink);border:0;border-radius:8px;
+        font-size:15.5px;font-weight:700;letter-spacing:.02em;min-height:50px;
+      }
+      .svc-next:disabled{background:var(--panel-3);color:var(--faint);cursor:default}
+
+      /* master category cards */
+      .cat-card{margin-top:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel-2);padding:12px}
+      .cat-card:first-child{margin-top:4px}
+      .cat-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 2px 4px}
+      .cat-name{font-family:var(--serif);font-size:17.5px;letter-spacing:.02em}
+      .cat-price{font-size:13.5px;color:var(--brass);white-space:nowrap}
+      .cat-card .opt{background:var(--panel)}
+      .cat-card .opt.sel{background:var(--panel-3)}
+
+      /* collapsible price list */
+      .price-head{width:100%;background:none;border:0;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;min-height:56px;text-align:left}
+      .price-title{font-family:var(--serif);font-size:19px;letter-spacing:.04em}
+      .price-head .chev{flex:none;color:var(--faint);transition:transform .25s ease}
+      .price-card.open .price-head .chev{transform:rotate(180deg)}
+      .price-body{display:none;padding-bottom:16px}
+      .price-card.open .price-body{display:block}
+
+      /* privacy consent */
+      .consent{font-size:13.5px;color:var(--muted);line-height:1.55;margin:2px 0 0}
+      .policy-link{background:none;border:0;padding:0;color:var(--brass);font-size:inherit;text-decoration:underline;text-underline-offset:2px}
+      .policy{margin-top:10px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);padding:12px 14px;font-size:13.5px;color:var(--muted);line-height:1.55}
+      .policy p{margin:0 0 8px}
+      .policy p:last-child{margin-bottom:0}
+      .policy b{color:var(--ink);font-weight:600}
+
+      /* summary + actions */
+      .summary{border-top:1px solid var(--line);padding:14px 18px 4px;display:none}
+      .summary.show{display:block}
+      .summary h3{font-family:var(--serif);font-weight:400;font-size:16px;margin:0 0 8px;letter-spacing:.03em}
+      .sum-row{display:flex;justify-content:space-between;gap:14px;font-size:14px;padding:3px 0;color:var(--muted)}
+      .sum-row b{color:var(--ink);font-weight:600;text-align:right}
+      .sum-row.total{font-size:15.5px;padding-top:8px;border-top:1px dashed var(--line);margin-top:6px}
+      .sum-row.total b{color:var(--brass);font-family:var(--serif);font-size:18px}
+      .cta{
+        display:block;width:calc(100% - 36px);margin:14px 18px 18px;padding:15px;
+        background:var(--brass);color:var(--brass-ink);border:0;border-radius:8px;
+        font-size:16px;font-weight:700;letter-spacing:.02em;min-height:52px;
+      }
+      .cta:disabled{background:var(--panel-3);color:var(--faint);cursor:default}
+      .cta.ghost{background:none;border:1px solid var(--brass-deep);color:var(--brass);font-weight:600}
+      .cta.danger{background:none;border:1px solid rgba(232,154,133,.5);color:var(--danger);font-weight:600}
+      .cta.danger.armed{background:var(--danger);border-color:var(--danger);color:#241009}
+
+      /* form */
+      .field{margin-top:14px}
+      .field:first-child{margin-top:4px}
+      .field label{display:block;font-size:13px;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;text-transform:uppercase}
+      .field input,.field textarea{
+        width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+        color:var(--ink);font-size:16px;padding:12px 13px;font-family:inherit;min-height:48px;
+      }
+      .field textarea{resize:vertical;min-height:64px}
+      .field input::placeholder,.field textarea::placeholder{color:var(--faint)}
+      .field input[aria-invalid="true"]{border-color:var(--danger)}
+      .ferr{display:none;font-size:13.5px;color:var(--danger);margin-top:6px;line-height:1.45}
+      .ferr.show{display:block}
+      .err{display:none;font-size:14px;color:var(--danger);margin-top:11px;line-height:1.45}
+      .err.show{display:block}
+
+      /* success */
+      .success{display:none;padding:34px 22px 26px;text-align:center}
+      .success.show{display:block}
+      .success .seal{
+        width:74px;height:74px;margin:0 auto;border-radius:50%;
+        border:1px solid var(--brass);background:rgba(196,154,92,.08);
+        display:flex;align-items:center;justify-content:center;color:var(--brass);
+      }
+      .success.cancelled .seal{border-color:var(--danger);color:var(--danger);background:rgba(232,154,133,.07)}
+      .success h2{font-family:var(--serif);font-weight:400;font-size:25px;margin:18px 0 4px;letter-spacing:.03em}
+      .success .num{color:var(--brass);font-size:14px;letter-spacing:.18em;text-transform:uppercase}
+      .success .details{
+        margin:20px auto 4px;max-width:340px;text-align:left;
+        border-top:1px solid var(--line);padding-top:12px;
+      }
+      .success .note{font-size:14px;color:var(--muted);line-height:1.55;margin:14px auto 0;max-width:340px}
+      .success .cta{width:100%;margin:12px 0 0}
+      .success .cta:first-of-type{margin-top:20px}
+
+      /* sticky bottom bar (mobile) */
+      .stickybar{
+        position:fixed;left:0;right:0;bottom:0;z-index:60;
+        background:rgba(22,18,14,.97);border-top:1px solid var(--line);
+        padding:10px 14px calc(10px + env(safe-area-inset-bottom));
+        display:none;align-items:center;gap:12px;
+      }
+      body.has-bar .stickybar{display:flex}
+      .sb-info{flex:1;min-width:0}
+      .sb-price{font-family:var(--serif);font-size:19px;color:var(--brass);line-height:1.15;white-space:nowrap}
+      .sb-sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+      .sb-btn{
+        flex:none;background:var(--brass);color:var(--brass-ink);border:0;border-radius:8px;
+        font-size:15.5px;font-weight:700;padding:0 20px;min-height:50px;min-width:132px;
+      }
+      .sb-btn:disabled{background:var(--panel-3);color:var(--faint);cursor:default}
+
+      /* under-card */
+      .perks{margin:18px 14px 0;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+      .perk{
+        background:var(--panel);border:1px solid var(--line-soft);border-radius:10px;
+        padding:13px 14px;font-size:13px;color:var(--muted);display:flex;gap:9px;align-items:flex-start;line-height:1.4;
+      }
+      .perk svg{flex:none;color:var(--brass);margin-top:1px}
+      .foot{margin:22px 20px 0;text-align:center;font-size:13.5px;color:var(--faint);line-height:1.6}
+      .foot a{color:var(--muted)}
+
+      /* master category groups */
+      .opt-group{font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);font-weight:600;margin:16px 0 0}
+
+      /* price list */
+      .price-card{padding-bottom:0}
+      .price-tabs{display:flex;gap:8px;padding:2px 18px 4px}
+      .ptab{
+        flex:1;min-height:46px;padding:10px 8px;border-radius:8px;
+        border:1px solid var(--line);background:var(--panel-2);color:var(--muted);
+        font-size:14.5px;font-weight:600;
+      }
+      .ptab.sel{background:var(--brass);border-color:var(--brass);color:var(--brass-ink)}
+      .price-group{font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--brass);font-weight:600;margin:15px 18px 3px}
+      .price-row{display:flex;align-items:baseline;gap:9px;padding:5px 18px;font-size:14.5px}
+      .price-row .pn{min-width:0}
+      .price-row .pdots{flex:1;border-bottom:1px dotted var(--line);position:relative;top:-3px}
+      .price-row .pp{font-family:var(--serif);font-size:15.5px;color:var(--brass);white-space:nowrap}
+      @media (min-width:900px){ .price-card{margin-top:22px} }
+
+      /* ---------- desktop: two columns ---------- */
+      @media (min-width:900px){
+        body.has-bar{padding-bottom:0}
+        .stickybar{display:none !important}
+        .layout{
+          max-width:1140px;margin:0 auto;padding:30px 24px 56px;
+          display:grid;grid-template-columns:400px minmax(0,1fr);
+          grid-template-areas:"side main" "extra main";
+          grid-template-rows:auto 1fr;
+          column-gap:30px;align-items:start;
+        }
+        .sidewrap{display:block;grid-area:side}
+        .side{display:block;position:sticky;top:24px}
+        .extra{display:block;grid-area:extra;margin-top:20px}
+        .maincol{grid-area:main;min-width:0}
+        .cover{border-radius:12px;height:230px}
+        .cover::after{border-radius:12px}
+        .head{text-align:left;padding:0 6px}
+        .medal{margin:0}
+        .meta{margin-left:0;margin-right:0}
+        .meta .row{justify-content:flex-start}
+        .actions{margin:20px 0 0}
+        .card{margin:0}
+        .perks{margin:0;grid-template-columns:1fr 1fr}
+        .foot{margin:18px 6px 0;text-align:left}
+        .dates{flex-wrap:wrap;overflow-x:visible}
+        .slots{grid-template-columns:repeat(6,1fr)}
+        .skel{grid-template-columns:repeat(6,1fr)}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+
+      <div class="sidewrap">
+      <div class="side">
+        <div class="cover">
+          <img src="assets/hero.webp" alt="Интерьер цирюльни «Князь» — кресла и зеркала" />
+        </div>
+
+        <header class="head">
+          <div class="medal"><img src="assets/logo.jpg" alt="Логотип цирюльни «Князь» — герб с лавровым венком" /></div>
+          <h1 class="name">Князь</h1>
+          <p class="kind">Цирюльня</p>
+          <p class="rating"><span class="star">★</span> <b>5,0</b> · 106 отзывов на 2ГИС</p>
+          <div class="meta">
+            <div class="row">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>Астрахань, пл. Свободы, 45 · 1 этаж</span>
+            </div>
+            <div class="row">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              <span id="openState"><span class="open-now">Открыто</span> · ежедневно 10:00–21:00</span>
+            </div>
+            <div class="row">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.25a2 2 0 0 1 2.1-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.9z"/></svg>
+              <a href="tel:+79171810484">+7 917 181-04-84</a>
+            </div>
+          </div>
+        </header>
+
+        <nav class="actions" aria-label="Быстрые действия">
+          <a class="action" href="tel:+79171810484">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.13.96.36 1.9.7 2.8a2 2 0 0 1-.45 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.25a2 2 0 0 1 2.1-.45c.9.34 1.84.57 2.8.7A2 2 0 0 1 22 16.9z"/></svg>
+            Позвонить
+          </a>
+          <a class="action" href="https://www.google.com/maps/search/?api=1&amp;query=%D0%A6%D0%B8%D1%80%D1%8E%D0%BB%D1%8C%D0%BD%D1%8F%20%D0%9A%D0%BD%D1%8F%D0%B7%D1%8C%2C%20%D0%90%D1%81%D1%82%D1%80%D0%B0%D1%85%D0%B0%D0%BD%D1%8C%2C%20%D0%BF%D0%BB%D0%BE%D1%89%D0%B0%D0%B4%D1%8C%20%D0%A1%D0%B2%D0%BE%D0%B1%D0%BE%D0%B4%D1%8B%2045" target="_blank" rel="noopener">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            Маршрут
+          </a>
+          <a class="action" href="https://2gis.ru/astrakhan/firm/70000001048372338/tab/reviews" target="_blank" rel="noopener">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 14.9 8.6l6.6.9-4.8 4.6 1.2 6.6L12 17.5l-5.9 3.2 1.2-6.6L2.5 9.5l6.6-.9Z"/></svg>
+            Отзывы
+          </a>
+          <a class="action" href="https://vk.com/cirulnya_knyaz" target="_blank" rel="noopener">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-8.5 8.5c-1.5 0-3-.4-4.2-1.1L3 20l1.1-5.3A8.5 8.5 0 1 1 21 11.5Z"/></svg>
+            Написать
+          </a>
+        </nav>
+      </div>
+      </div>
+
+      <div class="maincol">
+      <main class="card" id="bookCard">
+        <div id="flowView">
+          <h2 class="card-title">Онлайн-запись</h2>
+          <p class="card-sub">Выберите услуги, мастера и удобное время</p>
+
+          <div class="notice" id="notice" role="status" hidden></div>
+
+          <!-- Step 1: services -->
+          <section class="step open" id="stepSvc">
+            <button type="button" class="step-head" data-toggle="stepSvc" aria-expanded="true">
+              <span class="step-num">1</span>
+              <span class="step-main">
+                <span class="step-label">Услуги</span>
+                <div class="step-value" id="valSvc">Не выбраны</div>
+              </span>
+              <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="step-body" id="svcList"></div>
+          </section>
+
+          <!-- Step 2: specialist -->
+          <section class="step" id="stepMaster">
+            <button type="button" class="step-head" data-toggle="stepMaster" aria-expanded="false">
+              <span class="step-num">2</span>
+              <span class="step-main">
+                <span class="step-label">Специалист</span>
+                <div class="step-value" id="valMaster">Не выбран</div>
+              </span>
+              <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="step-body" id="masterList"></div>
+          </section>
+
+          <!-- Step 3: date & time -->
+          <section class="step" id="stepWhen">
+            <button type="button" class="step-head" data-toggle="stepWhen" aria-expanded="false">
+              <span class="step-num">3</span>
+              <span class="step-main">
+                <span class="step-label">Дата и время</span>
+                <div class="step-value" id="valWhen">Не выбраны</div>
+              </span>
+              <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <div class="step-body">
+              <div class="dates" id="dateStrip"></div>
+              <div id="slotBox" aria-live="polite"></div>
+              <p class="hint" id="slotHint"></p>
+            </div>
+          </section>
+
+          <div class="summary" id="summary"></div>
+          <button type="button" class="cta" id="toFormBtn" disabled>Продолжить</button>
+        </div>
+
+        <!-- Contacts -->
+        <div id="formView" hidden>
+          <h2 class="card-title">Ваши данные</h2>
+          <p class="card-sub" id="formSummary"></p>
+          <div style="padding:2px 18px 6px">
+            <div class="field">
+              <label for="fName">Имя</label>
+              <input id="fName" type="text" autocomplete="name" placeholder="Как к вам обращаться" aria-describedby="fNameErr" />
+              <p class="ferr" id="fNameErr"></p>
+            </div>
+            <div class="field">
+              <label for="fPhone">Телефон</label>
+              <input id="fPhone" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7 (___) ___-__-__" aria-describedby="fPhoneErr" />
+              <p class="ferr" id="fPhoneErr"></p>
+            </div>
+            <div class="field">
+              <label for="fComment">Комментарий <span style="text-transform:none;letter-spacing:0">(необязательно)</span></label>
+              <textarea id="fComment" placeholder="Пожелания к визиту"></textarea>
+            </div>
+            <p class="err" id="formErr" role="alert"></p>
+          </div>
+          <div style="padding:0 18px">
+            <p class="consent">Нажимая «Подтвердить запись», вы соглашаетесь с <button type="button" class="policy-link" id="policyLink" aria-expanded="false" aria-controls="policyBox">политикой обработки персональных данных</button>.</p>
+            <div class="policy" id="policyBox" hidden>
+              <p><b>Какие данные:</b> имя и номер телефона, а также комментарий к записи, если вы его оставите.</p>
+              <p><b>Зачем:</b> только чтобы подтвердить запись и связаться с вами по ней.</p>
+              <p><b>Где хранятся:</b> эта страница работает без сервера — запись сохраняется только в вашем браузере на этом устройстве.</p>
+              <p><b>Кому передаются:</b> никому, третьим лицам данные не передаются.</p>
+              <p>Удалить свои данные можно по звонку: +7 917 181-04-84.</p>
+            </div>
+          </div>
+          <button type="button" class="cta" id="confirmBtn">Подтвердить запись</button>
+          <button type="button" class="cta ghost" id="backBtn" style="margin-top:0">Назад к выбору</button>
+        </div>
+
+        <!-- Success / cancelled -->
+        <div class="success" id="successView">
+          <div class="seal" id="okSeal">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          </div>
+          <h2 id="okTitle">Вы записаны</h2>
+          <div class="num" id="okNum">Запись K-1001</div>
+          <div class="details" id="okDetails"></div>
+          <p class="note" id="okNote">Запись сохранена. Если планы изменятся, позвоните нам по телефону +7 917 181-04-84 — или перенесите и отмените запись прямо здесь.</p>
+          <div id="okActions">
+            <button type="button" class="cta" id="icsBtn">Добавить в календарь</button>
+            <button type="button" class="cta ghost" id="reschedBtn">Перенести запись</button>
+            <button type="button" class="cta danger" id="cancelBtn">Отменить запись</button>
+            <button type="button" class="cta ghost" id="againBtn">Новая запись</button>
+          </div>
+        </div>
+      </main>
+
+      <section class="card price-card" id="priceCard" aria-label="Прайс цирюльни">
+        <button type="button" class="price-head" id="priceToggle" aria-expanded="false" aria-controls="priceBody">
+          <span class="price-title">Прайс</span>
+          <svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="price-body" id="priceBody">
+          <p class="card-sub">Цены зависят от категории мастера.</p>
+          <div class="price-tabs" role="tablist" aria-label="Категория мастера">
+            <button type="button" class="ptab sel" data-ptab="barber" role="tab" aria-selected="true">Цирюльник</button>
+            <button type="button" class="ptab" data-ptab="top" role="tab" aria-selected="false">Топ-цирюльник</button>
+          </div>
+          <div id="priceList"></div>
+        </div>
+      </section>
+      </div>
+
+      <div class="extra">
+        <div class="perks">
+          <div class="perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+            <span>Оплата только наличными</span>
+          </div>
+          <div class="perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><circle cx="12" cy="19.5" r="0.6" fill="currentColor"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/></svg>
+            <span>Wi-Fi в зале ожидания</span>
+          </div>
+          <div class="perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10.5C6 12 3.5 14.5 3.5 17.5c0 1.9 1.6 3 3.5 3 1.2 0 1.9-.5 3-.5s1.8.5 3 .5c1.9 0 3.5-1.1 3.5-3 0-3-2.5-5.5-5.5-7-.7-.4-1.6-.4-2 0Z"/></svg>
+            <span>Можно с собакой</span>
+          </div>
+          <div class="perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Центр города — пл. Свободы, 45</span>
+          </div>
+        </div>
+
+        <p class="foot">
+          Цирюльня «Князь» · Астрахань, пл. Свободы, 45, 1 этаж<br />
+          Мы во «ВКонтакте»: <a href="https://vk.com/cirulnya_knyaz" target="_blank" rel="noopener">vk.com/cirulnya_knyaz</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- sticky bottom bar: mobile only -->
+    <div class="stickybar" id="stickyBar">
+      <div class="sb-info">
+        <div class="sb-price" id="sbPrice">Выберите услуги</div>
+        <div class="sb-sub" id="sbSub">Шаг 1 из 3 · услуги</div>
+      </div>
+      <button type="button" class="sb-btn" id="sbBtn">Продолжить</button>
+    </div>
+
+    <script>
+    (function(){
+      "use strict";
+
+      /* ---------------- data ---------------- */
+      var OPEN = 10*60, CLOSE = 21*60, STEP = 30;
+      var TZ = "Europe/Samara"; /* Астрахань, UTC+4 */
+
+      var CATS = [
+        {id:"barber", name:"Цирюльник"},
+        {id:"top",    name:"Топ-цирюльник"}
+      ];
+      function catName(id){ for(var i=0;i<CATS.length;i++) if(CATS[i].id===id) return CATS[i].name; return ""; }
+
+      var MASTERS = [
+        {id:"any",       name:"Любой мастер",        note:"Категория не важна · первый освободившийся", initials:""},
+        {id:"cat:barber",name:"Любой цирюльник",     note:"Категория «Цирюльник»",     cat:"barber", initials:""},
+        {id:"barber:b1", name:"Барбер 1",            note:"Цирюльник",                 cat:"barber", initials:"Б1"},
+        {id:"barber:b2", name:"Барбер 2",            note:"Цирюльник",                 cat:"barber", initials:"Б2"},
+        {id:"cat:top",   name:"Любой топ-цирюльник", note:"Категория «Топ-цирюльник»", cat:"top",    initials:""},
+        {id:"top:b1",    name:"Барбер 1",            note:"Топ-цирюльник",             cat:"top",    initials:"Б1"},
+        {id:"top:b2",    name:"Барбер 2",            note:"Топ-цирюльник",             cat:"top",    initials:"Б2"}
+      ];
+
+      /* Прайс владельца: цена зависит от категории мастера.
+         Длительности в прайсе нет — на странице она не показывается («уточняется»);
+         поле dur используется только внутри, для проверки занятости слотов. */
+      var SERVICES = [
+        {id:"haircut",   name:"Стрижка мужская",                           dur:60,  prices:{barber:700,  top:1000}},
+        {id:"kids",      name:"Стрижка детская (3–11 лет)",                dur:45,  prices:{barber:600,  top:900}},
+        {id:"clipper",   name:"Стрижка под машинку (одна насадка)",        dur:30,  prices:{barber:400,  top:400}},
+        {id:"beard",     name:"Коррекция бороды",                          dur:30,  prices:{barber:400,  top:600}},
+        {id:"beardshave",name:"Коррекция бороды с подбриванием",           dur:45,  prices:{barber:600,  top:700}},
+        {id:"shave",     name:"Бритьё",                                    dur:45,  prices:{barber:900,  top:900}},
+        {id:"camoHair",  name:"Камуфляж седины (волос)",                   dur:30,  prices:{barber:500,  top:500}},
+        {id:"camoBeard", name:"Камуфляж седины (борода)",                  dur:30,  prices:{barber:450,  top:450}},
+        {id:"edge",      name:"Окантовка с подбриванием",                  dur:20,  prices:{barber:250,  top:250}},
+        {id:"wash",      name:"Мытьё и укладка волос",                     dur:20,  prices:{barber:150,  top:200}},
+        {id:"pkgFriends",name:"Друг+друг",                                 dur:120, prices:{barber:1300, top:1900}, group:"combo", includes:["haircut"]},
+        {id:"pkgFather", name:"Отец+сын (3–11 лет)",                       dur:90,  prices:{barber:1200, top:1800}, group:"combo", includes:["haircut","kids"]},
+        {id:"pkgHB",     name:"Стрижка + коррекция бороды",                dur:90,  prices:{barber:1000, top:1400}, group:"combo", includes:["haircut","beard"]},
+        {id:"pkgHBS",    name:"Стрижка + коррекция бороды с подбриванием", dur:105, prices:{barber:1100, top:1600}, group:"combo", includes:["haircut","beardshave"]},
+        {id:"waxEars",   name:"Воск — уши",   short:"Уши",   dur:15, prices:{barber:300, top:300}, group:"wax"},
+        {id:"waxNose",   name:"Воск — нос",   short:"Нос",   dur:15, prices:{barber:200, top:200}, group:"wax"},
+        {id:"waxBrows",  name:"Воск — брови", short:"Брови", dur:15, prices:{barber:200, top:200}, group:"wax"},
+        {id:"waxNeck",   name:"Воск — шея",   short:"Шея",   dur:15, prices:{barber:500, top:500}, group:"wax"}
+      ];
+
+      /* ---------------- storage (this browser only) ---------------- */
+      var LS_BOOK = "knyaz-yc-bookings-v1";
+      var LS_DRAFT = "knyaz-yc-draft-v1";
+      function lsGet(k){ try{ var v = localStorage.getItem(k); return v ? JSON.parse(v) : null; }catch(e){ return null; } }
+      function lsSet(k,v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+
+      var store = lsGet(LS_BOOK) || {seq:1001, list:[]};
+      if(!store.list) store.list = [];
+      if(!store.seq) store.seq = 1001;
+
+      var state = {
+        master:"any",
+        date:null,          // Date object (wall-clock in TZ, local fields)
+        time:null,          // minutes from midnight
+        services:{},        // id -> true
+        view:"flow",        // flow | form | success
+        rescheduleNum:null, // booking number being moved
+        lastBooking:null,
+        saving:false
+      };
+
+      /* ---------------- helpers ---------------- */
+      function $(id){ return document.getElementById(id); }
+      function pad(n){ return (n<10?"0":"")+n; }
+      function fmtTime(min){ return pad(Math.floor(min/60))+":"+pad(min%60); }
+      function fmtDur(min){
+        if(min<60) return min+" мин";
+        var h=Math.floor(min/60), m=min%60;
+        return m? h+" ч "+m+" мин" : h+" ч";
+      }
+      function fmtPrice(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")+" ₽"; }
+      function esc(s){
+        return String(s).replace(/[&<>"']/g, function(c){
+          return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+        });
+      }
+      function dateKey(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+      function parseKey(k){
+        var p = String(k||"").split("-");
+        if(p.length!==3) return null;
+        return new Date(+p[0], +p[1]-1, +p[2]);
+      }
+      function sameDay(a,b){ return a && b && dateKey(a)===dateKey(b); }
+
+      var DOW = ["вс","пн","вт","ср","чт","пт","сб"];
+      var MON = ["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"];
+      var MON_S = ["янв","фев","мар","апр","мая","июн","июл","авг","сен","окт","ноя","дек"];
+      function fmtDateFull(d){ return DOW[d.getDay()]+", "+d.getDate()+" "+MON[d.getMonth()]; }
+
+      /* "now" in the shop's timezone, regardless of the visitor's device zone */
+      function tzNow(){
+        try{
+          var parts = {};
+          new Intl.DateTimeFormat("en-GB",{timeZone:TZ,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hour12:false})
+            .formatToParts(new Date())
+            .forEach(function(p){ parts[p.type]=p.value; });
+          return {
+            date:new Date(+parts.year, +parts.month-1, +parts.day),
+            minutes:((+parts.hour)%24)*60 + (+parts.minute)
+          };
+        }catch(e){
+          var n = new Date();
+          return { date:new Date(n.getFullYear(), n.getMonth(), n.getDate()), minutes:n.getHours()*60+n.getMinutes() };
+        }
+      }
+
+      function svcById(id){ for(var i=0;i<SERVICES.length;i++) if(SERVICES[i].id===id) return SERVICES[i]; return null; }
+      function masterById(id){ for(var i=0;i<MASTERS.length;i++) if(MASTERS[i].id===id) return MASTERS[i]; return null; }
+      function selectedServices(){
+        return SERVICES.filter(function(s){ return state.services[s.id]; });
+      }
+      function totalDur(){
+        var t=0; selectedServices().forEach(function(s){ t+=s.dur; });
+        return t || 60; /* пока услуги не выбраны, слоты считаем по часу */
+      }
+      function effectiveCat(){
+        var m = masterById(state.master);
+        return m && m.cat ? m.cat : null;
+      }
+      function svcPrice(s){
+        var cat = effectiveCat();
+        if(cat) return {v:s.prices[cat], from:false};
+        return {v:Math.min(s.prices.barber, s.prices.top), from:s.prices.barber!==s.prices.top};
+      }
+      function totalPrice(){
+        var t=0; selectedServices().forEach(function(s){ t+=svcPrice(s).v; });
+        return t;
+      }
+      function priceIsFrom(){
+        if(effectiveCat()) return false;
+        return selectedServices().some(function(s){ return s.prices.barber!==s.prices.top; });
+      }
+      function masterLabel(id){
+        var m = masterById(id);
+        if(!m) return "";
+        if(m.id.indexOf("cat:")===0) return m.name;
+        return m.cat ? m.name+" · "+catName(m.cat) : m.name;
+      }
+      /* «any» — это состояние «мастер ещё не выбран», а не конкретный выбор:
+         в итогах показываем то же, что и в шапке шага 2, — «Не выбран» */
+      function masterDisplayLabel(){
+        return state.master==="any" ? "Не выбран" : masterLabel(state.master);
+      }
+      function candidateMasters(){
+        if(state.master==="any") return ["barber:b1","barber:b2","top:b1","top:b2"];
+        var m = masterById(state.master);
+        if(m && m.id.indexOf("cat:")===0) return [m.cat+":b1", m.cat+":b2"];
+        return [state.master];
+      }
+      function svcWord(n){ return n===1 ? "услуга" : (n>=2 && n<=4 ? "услуги" : "услуг"); }
+      function fmtTotal(){
+        return (priceIsFrom()?"от ":"")+fmtPrice(totalPrice());
+      }
+
+      /* ------- deterministic "already busy" intervals, same for every visitor ------- */
+      function hashStr(s){
+        var h=2166136261;
+        for(var i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619); }
+        return (h>>>0);
+      }
+      function busyIntervals(masterId, d){
+        var key = masterId+"|"+dateKey(d);
+        var seed = hashStr(key);
+        function rnd(){ seed = (Math.imul(seed,1103515245)+12345) & 0x7fffffff; return seed/0x7fffffff; }
+        var out=[], count = 2 + Math.floor(rnd()*2); /* 2–3 занятых окна в день */
+        for(var i=0;i<count;i++){
+          var start = OPEN + Math.floor(rnd()*((CLOSE-OPEN-120)/30))*30;
+          var len = (1+Math.floor(rnd()*3))*30; /* 30–90 мин */
+          out.push([start, Math.min(start+len, CLOSE)]);
+        }
+        return out;
+      }
+      function overlaps(aStart,aEnd,bStart,bEnd){ return aStart < bEnd && bStart < aEnd; }
+
+      function masterFree(masterId, d, start, dur){
+        var end = start+dur;
+        if(end > CLOSE) return false;
+        var busy = busyIntervals(masterId, d), i;
+        for(i=0;i<busy.length;i++) if(overlaps(start,end,busy[i][0],busy[i][1])) return false;
+        for(i=0;i<store.list.length;i++){
+          var b = store.list[i];
+          if(b.num===state.rescheduleNum) continue; /* свой перенос не блокирует сам себя */
+          if(b.masterId===masterId && b.dateKey===dateKey(d) && overlaps(start,end,b.start,b.start+b.dur)) return false;
+        }
+        return true;
+      }
+      function slotFree(d, start){
+        var dur = totalDur();
+        if(start+dur > CLOSE) return false;
+        var now = tzNow();
+        if(sameDay(d, now.date) && start < now.minutes + 30) return false;
+        var cands = candidateMasters();
+        for(var i=0;i<cands.length;i++) if(masterFree(cands[i], d, start, dur)) return true;
+        return false;
+      }
+      function dayHasFree(d){
+        for(var t=OPEN; t+totalDur()<=CLOSE; t+=STEP){
+          if(slotFree(d,t)) return true;
+        }
+        return false;
+      }
+      function nearestFreeDay(from){
+        var base = tzNow().date;
+        for(var i=0;i<14;i++){
+          var d = new Date(base.getFullYear(), base.getMonth(), base.getDate()+i);
+          if(from && dateKey(d) <= dateKey(from) && !sameDay(d,from)) continue;
+          if(sameDay(d,from)) continue;
+          if(dayHasFree(d)) return d;
+        }
+        return null;
+      }
+      function assignMaster(d, start){
+        var dur = totalDur();
+        var cands = candidateMasters();
+        for(var i=0;i<cands.length;i++) if(masterFree(cands[i], d, start, dur)) return cands[i];
+        return null;
+      }
+
+      /* ---------------- draft persistence ---------------- */
+      function saveDraft(){
+        lsSet(LS_DRAFT, {
+          master:state.master,
+          services:Object.keys(state.services).filter(function(k){ return state.services[k]; }),
+          dateKey:state.date ? dateKey(state.date) : null,
+          time:state.time,
+          rescheduleNum:state.rescheduleNum
+        });
+      }
+      function restoreDraft(){
+        var dr = lsGet(LS_DRAFT);
+        if(!dr) return false;
+        if(masterById(dr.master)) state.master = dr.master;
+        (dr.services||[]).forEach(function(id){ if(svcById(id)) state.services[id]=true; });
+        /* пакеты и входящие в них услуги не держим одновременно */
+        SERVICES.forEach(function(s){
+          if(s.includes && state.services[s.id]) s.includes.forEach(function(x){ delete state.services[x]; });
+        });
+        var d = parseKey(dr.dateKey);
+        if(d && dateKey(d) >= dateKey(tzNow().date)) state.date = d;
+        if(state.date && typeof dr.time==="number") state.time = dr.time;
+        if(dr.rescheduleNum && store.list.some(function(b){ return b.num===dr.rescheduleNum; })){
+          state.rescheduleNum = dr.rescheduleNum;
+        }
+        return true;
+      }
+
+      /* ---------------- notice ---------------- */
+      var noticeTimer = null;
+      function showNotice(msg){
+        var n = $("notice");
+        n.textContent = msg;
+        n.hidden = false;
+        if(noticeTimer) clearTimeout(noticeTimer);
+        noticeTimer = setTimeout(function(){ n.hidden = true; }, 12000);
+      }
+      function hideNotice(){ $("notice").hidden = true; }
+
+      /* ---------------- render: masters ---------------- */
+      var USERS_SVG = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+      function renderMasters(){
+        function opt(m, displayName, note){
+          var sel = state.master===m.id;
+          return '<button type="button" class="opt'+(sel?" sel":"")+'" data-master="'+m.id+'" aria-pressed="'+(sel?"true":"false")+'">'
+            + '<span class="avatar">'+(m.initials ? esc(m.initials) : USERS_SVG)+'</span>'
+            + '<span class="who"><span class="n">'+esc(displayName)+'</span>'+(note?'<div class="d">'+esc(note)+'</div>':"")+'</span>'
+            + '<span class="radio"></span></button>';
+        }
+        var chosen = selectedServices();
+        var html = "";
+        CATS.forEach(function(c){
+          var priceLine;
+          if(chosen.length){
+            var t = 0;
+            chosen.forEach(function(s){ t += s.prices[c.id]; });
+            priceLine = "выбранное — "+fmtPrice(t);
+          } else {
+            var min = Infinity;
+            SERVICES.forEach(function(s){ if(s.prices[c.id] < min) min = s.prices[c.id]; });
+            priceLine = "услуги от "+fmtPrice(min);
+          }
+          html += '<div class="cat-card"><div class="cat-head"><span class="cat-name">'+esc(c.name)+'</span><span class="cat-price">'+priceLine+'</span></div>';
+          html += opt(masterById("cat:"+c.id), "Любой", "Первый освободившийся");
+          MASTERS.forEach(function(m){
+            if(m.cat===c.id && m.id.indexOf("cat:")!==0) html += opt(m, m.name, "");
+          });
+          html += '</div>';
+        });
+        $("masterList").innerHTML = html;
+        var btns = $("masterList").querySelectorAll("[data-master]");
+        for(var i=0;i<btns.length;i++){
+          btns[i].addEventListener("click", function(){
+            state.master = this.getAttribute("data-master");
+            onSelectionChanged("master");
+            openStep("stepWhen");
+          });
+        }
+      }
+
+      /* ---------------- render: dates & slots ---------------- */
+      function renderDates(){
+        var html="", today = tzNow().date;
+        for(var i=0;i<14;i++){
+          var d = new Date(today.getFullYear(), today.getMonth(), today.getDate()+i);
+          var sel = state.date && sameDay(d, state.date);
+          var free = dayHasFree(d);
+          html += '<button type="button" class="day'+(sel?" sel":"")+(free?"":" full")+'" data-day="'+i+'" aria-pressed="'+(sel?"true":"false")+'" aria-label="'+fmtDateFull(d)+(free?"":", свободного времени нет")+'">'
+            + '<div class="dw">'+(i===0?"Сегодня":DOW[d.getDay()])+'</div>'
+            + '<div class="dn">'+d.getDate()+'</div>'
+            + '<div class="dm">'+MON_S[d.getMonth()]+'</div>'
+            + (free?'<span class="free-dot" aria-hidden="true"></span>':"")
+            + '</button>';
+        }
+        $("dateStrip").innerHTML = html;
+        var btns = $("dateStrip").querySelectorAll("[data-day]");
+        for(var j=0;j<btns.length;j++){
+          btns[j].addEventListener("click", function(){
+            var off = parseInt(this.getAttribute("data-day"),10);
+            var t = tzNow().date;
+            state.date = new Date(t.getFullYear(), t.getMonth(), t.getDate()+off);
+            state.time = null;
+            saveDraft();
+            renderAll();
+          });
+        }
+      }
+
+      var loadToken = 0;
+      function loadSlots(){
+        var box = $("slotBox"), hint = $("slotHint");
+        var my = ++loadToken;
+        if(!state.date){
+          box.innerHTML = '<p class="slots-empty">Сначала выберите дату выше.</p>';
+          hint.textContent = "";
+          return;
+        }
+        /* состояние загрузки: скелетон вместо пустого блока */
+        var skel = '<div class="skel" aria-hidden="true">';
+        for(var i=0;i<12;i++) skel += "<i></i>";
+        skel += '</div><p class="load-note">Загружаем свободное время…</p>';
+        box.innerHTML = skel;
+        hint.textContent = "";
+
+        setTimeout(function(){
+          if(my !== loadToken) return;
+          if(typeof navigator!=="undefined" && navigator.onLine === false){
+            box.innerHTML = '<div class="load-err" role="alert"><p>Не удалось загрузить свободное время — похоже, пропал интернет. Ваш выбор сохранён.</p>'
+              + '<button type="button" class="retry-btn" id="retrySlots">Повторить</button></div>';
+            $("retrySlots").addEventListener("click", loadSlots);
+            return;
+          }
+          renderSlots();
+        }, 280);
+      }
+
+      function renderSlots(){
+        var box = $("slotBox"), hint = $("slotHint");
+        var groups = [
+          {label:"Утро",  from:OPEN,     to:12*60},
+          {label:"День",  from:12*60,    to:17*60},
+          {label:"Вечер", from:17*60,    to:CLOSE}
+        ];
+        var html="", anyFree=false;
+        groups.forEach(function(g){
+          var cells="";
+          for(var t=g.from; t<g.to; t+=STEP){
+            var free = slotFree(state.date, t);
+            if(free) anyFree = true;
+            var sel = state.time===t;
+            cells += '<button type="button" class="slot'+(sel?" sel":"")+'" data-time="'+t+'" aria-pressed="'+(sel?"true":"false")+'"'+(free?"":" disabled")+'>'+fmtTime(t)+'</button>';
+          }
+          if(cells) html += '<div class="slots-group">'+g.label+'</div><div class="slots">'+cells+'</div>';
+        });
+        if(!anyFree){
+          var nf = nearestFreeDay(state.date);
+          html = '<p class="slots-empty">На '+fmtDateFull(state.date)+' свободного времени нет.</p>';
+          if(nf){
+            html += '<button type="button" class="nearest" id="nearestBtn">Ближайшая свободная дата — <b>'+fmtDateFull(nf)+'</b>. Перейти к ней →</button>';
+          }
+        }
+        box.innerHTML = html;
+        var nb = $("nearestBtn");
+        if(nb){
+          nb.addEventListener("click", function(){
+            state.date = nearestFreeDay(state.date);
+            state.time = null;
+            saveDraft();
+            renderAll();
+          });
+        }
+        var durNote = selectedServices().length
+          ? "Зачёркнутое время недоступно для выбранных услуг и мастера."
+          : "Пока услуги не выбраны, свободное время показано приблизительно. Если добавите услуг, недоступные слоты закроются.";
+        hint.textContent = durNote;
+        var btns = box.querySelectorAll("[data-time]");
+        for(var i=0;i<btns.length;i++){
+          btns[i].addEventListener("click", function(){
+            state.time = parseInt(this.getAttribute("data-time"),10);
+            hideNotice();
+            saveDraft();
+            renderAll();
+            $("summary").scrollIntoView({behavior:"smooth", block:"nearest"});
+          });
+        }
+      }
+
+      /* ---------------- render: services ---------------- */
+      /* Комплекс выгоднее отдельных услуг: все входящие услуги выбраны по отдельности,
+         а комплекс из прайса стоит дешевле их суммы — предлагаем замену. */
+      function bestBundle(){
+        var best = null;
+        SERVICES.forEach(function(s){
+          if(!s.includes || state.services[s.id]) return;
+          var allIn = s.includes.every(function(id){ return !!state.services[id]; });
+          if(!allIn) return;
+          var comboP = svcPrice(s), sum = 0;
+          s.includes.forEach(function(id){ sum += svcPrice(svcById(id)).v; });
+          if(comboP.v < sum && (!best || (sum - comboP.v) > best.save)){
+            best = {combo:s, price:comboP.v, from:comboP.from, sum:sum, save:sum - comboP.v};
+          }
+        });
+        return best;
+      }
+      function selectedCombo(){
+        var sel = selectedServices();
+        for(var i=0;i<sel.length;i++) if(sel[i].includes) return sel[i];
+        return null;
+      }
+      function svcDisabled(s){
+        if(state.services[s.id]) return false;
+        /* Недоступна только услуга, которая уже входит в выбранный комплекс:
+           комплексы не блокируются — выбор другого комплекса заменяет текущий
+           (см. обработчик нажатия в renderServices). */
+        var c = selectedCombo();
+        return !!(c && c.includes.indexOf(s.id)>=0);
+      }
+      var SVC_GROUPS = [
+        {id:"hair",  name:"Стрижки",       ids:["haircut","kids","clipper","wash"]},
+        {id:"beard", name:"Борода",        ids:["beard","beardshave","shave","camoBeard","edge"]},
+        {id:"combo", name:"Комплексы",     ids:["pkgFriends","pkgFather","pkgHB","pkgHBS"]},
+        {id:"extra", name:"Дополнительно", ids:["camoHair","waxEars","waxNose","waxBrows","waxNeck"]}
+      ];
+      var svcOpen = "hair";
+      var CHEV_SVG = '<svg class="chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+      function renderServices(){
+        var html = '<p class="hint" style="margin:2px 0 4px">Цены зависят от категории мастера (шаг 2) — пока она не выбрана, показана минимальная со знаком «от». Длительность визита уточняется у мастера. Комплекс можно выбрать только один: нажатие на другой комплекс заменит выбранный.</p>';
+        SVC_GROUPS.forEach(function(g){
+          var items = g.ids.map(svcById).filter(function(s){ return !!s; });
+          var selCount = 0;
+          items.forEach(function(s){ if(state.services[s.id]) selCount++; });
+          var open = svcOpen===g.id;
+          html += '<div class="svc-group'+(open?" open":"")+'">'
+            + '<button type="button" class="svc-ghead" data-svcgroup="'+g.id+'" aria-expanded="'+(open?"true":"false")+'">'
+            + '<span class="svc-gname">'+g.name+'</span>'
+            + (selCount ? '<span class="svc-gcount">выбрано: '+selCount+'</span>' : "")
+            + CHEV_SVG + '</button>'
+            + '<div class="svc-gbody">';
+          items.forEach(function(s){
+            var sel = !!state.services[s.id], dis = svcDisabled(s);
+            var p = svcPrice(s);
+            var combo = selectedCombo();
+            var note = "";
+            if(dis && combo){
+              /* услуга недоступна, потому что уже входит в выбранный комплекс */
+              note = 'Входит в комплекс «'+esc(combo.name)+'» — сначала снимите выбранный комплекс, чтобы выбрать её отдельно';
+            } else if(!sel && s.includes && combo){
+              /* комплекс не блокируется: нажатие заменит текущий комплекс */
+              note = 'Заменит выбранный комплекс «'+esc(combo.name)+'»';
+            }
+            html += '<button type="button" class="svc'+(sel?" sel":"")+'" data-svc="'+s.id+'" aria-pressed="'+(sel?"true":"false")+'"'+(dis?" disabled":"")+'>'
+              + '<span class="inf"><span class="n">'+esc(s.name)+'</span>'+(note?'<div class="d">'+note+'</div>':"")+'</span>'
+              + '<span class="p">'+(p.from?"от ":"")+fmtPrice(p.v)+'</span>'
+              + '<span class="box"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>'
+              + '</button>';
+          });
+          html += '</div></div>';
+        });
+        var bb = bestBundle();
+        if(bb){
+          html += '<div class="bundle-hint" role="status"><p>Эти услуги доступны комплексом «'
+            + esc(bb.combo.name)+'» по цене '+(bb.from?"от ":"")+fmtPrice(bb.price)
+            + ' — на '+fmtPrice(bb.save)+' дешевле, чем по отдельности.</p>'
+            + '<button type="button" class="bundle-swap" id="bundleSwap">Заменить на комплекс</button></div>';
+        }
+        var anySvc = selectedServices().length>0;
+        html += '<button type="button" class="svc-next" id="svcNext"'+(anySvc?"":" disabled")+'>Далее</button>';
+        $("svcList").innerHTML = html;
+        var swapBtn = $("bundleSwap");
+        if(swapBtn){
+          swapBtn.addEventListener("click", function(){
+            var b = bestBundle();
+            if(!b) return;
+            b.combo.includes.forEach(function(id){ delete state.services[id]; });
+            state.services[b.combo.id] = true;
+            svcOpen = "combo"; /* открыть группу, чтобы было видно выбранный комплекс */
+            onSelectionChanged("services");
+          });
+        }
+        $("svcNext").addEventListener("click", function(){
+          if(!selectedServices().length) return;
+          openStep("stepMaster");
+          $("stepMaster").scrollIntoView({behavior:"smooth", block:"nearest"});
+        });
+        var gbtns = $("svcList").querySelectorAll("[data-svcgroup]");
+        for(var gi=0; gi<gbtns.length; gi++){
+          gbtns[gi].addEventListener("click", function(){
+            var id = this.getAttribute("data-svcgroup");
+            svcOpen = (svcOpen===id) ? "" : id;
+            renderServices();
+          });
+        }
+        var btns = $("svcList").querySelectorAll("[data-svc]");
+        for(var i=0;i<btns.length;i++){
+          btns[i].addEventListener("click", function(){
+            var id = this.getAttribute("data-svc");
+            var s = svcById(id);
+            var turningOn = !state.services[id];
+            state.services[id] = turningOn;
+            if(turningOn && s && s.includes){
+              /* Комплекс заменяет: другой выбранный комплекс снимается целиком,
+                 а услуги, входящие в новый комплекс, снимаются по отдельности —
+                 комплекс и его состав одновременно не держатся. */
+              var replaced = [];
+              SERVICES.forEach(function(o){
+                if(o.id===id || !state.services[o.id]) return;
+                if(o.includes || s.includes.indexOf(o.id)>=0){
+                  replaced.push(o.name);
+                  delete state.services[o.id];
+                }
+              });
+              if(replaced.length){
+                showNotice("Выбран комплекс «"+s.name+"» — он заменил: "+replaced.join(", ")
+                  +". Одновременно можно выбрать только один комплекс.");
+              }
+              svcOpen = "combo"; /* показать выбранный комплекс в его группе */
+            }
+            onSelectionChanged("services");
+            /* выбор услуг не уводит дальше сам: шаг остаётся открытым,
+               переход — по кнопке «Далее» под списком */
+          });
+        }
+      }
+
+      /* ---------------- selection changes: validate time ---------------- */
+      function onSelectionChanged(source){
+        if(state.date && state.time!=null && !slotFree(state.date, state.time)){
+          var lost = fmtTime(state.time);
+          state.time = null;
+          showNotice("Время "+lost+" ("+fmtDateFull(state.date)+") стало недоступно после изменения "
+            + (source==="master" ? "мастера" : "состава услуг")
+            + " — выберите другое время в шаге 3.");
+          openStep("stepWhen");
+        }
+        saveDraft();
+        renderAll();
+      }
+
+      /* ---------------- summary, heads, sticky bar ---------------- */
+      function ready(){
+        return !!(state.date && state.time!=null && selectedServices().length>0);
+      }
+      function renderHeads(){
+        if(state.master==="any"){
+          $("valMaster").textContent = "Не выбран";
+          $("stepMaster").classList.remove("done");
+        } else {
+          $("valMaster").textContent = masterLabel(state.master);
+          $("stepMaster").classList.add("done");
+        }
+
+        if(state.date && state.time!=null){
+          $("valWhen").textContent = fmtDateFull(state.date)+" · начало в "+fmtTime(state.time);
+          $("stepWhen").classList.add("done");
+        } else if(state.date){
+          $("valWhen").textContent = fmtDateFull(state.date)+" · время не выбрано";
+          $("stepWhen").classList.remove("done");
+        } else {
+          $("valWhen").textContent = "Не выбраны";
+          $("stepWhen").classList.remove("done");
+        }
+
+        var sel = selectedServices();
+        if(sel.length){
+          $("valSvc").textContent = sel.length+" "+svcWord(sel.length)+" · "+fmtTotal();
+          $("stepSvc").classList.add("done");
+        } else {
+          $("valSvc").textContent = "Не выбраны";
+          $("stepSvc").classList.remove("done");
+        }
+
+        var sum = $("summary");
+        if(sel.length && state.date){
+          var rows = "<h3>Ваша запись</h3>";
+          sel.forEach(function(s){
+            var p = svcPrice(s);
+            rows += '<div class="sum-row"><span>'+esc(s.name)+'</span><b>'+(p.from?"от ":"")+fmtPrice(p.v)+'</b></div>';
+          });
+          rows += '<div class="sum-row"><span>Мастер</span><b>'+esc(masterDisplayLabel())+'</b></div>';
+          rows += '<div class="sum-row"><span>Дата</span><b>'+fmtDateFull(state.date)+'</b></div>';
+          if(state.time!=null){
+            rows += '<div class="sum-row"><span>Начало</span><b>'+fmtTime(state.time)+'</b></div>';
+          }
+          rows += '<div class="sum-row total"><span>Итого</span><b>'+fmtTotal()+'</b></div>';
+          if(priceIsFrom()) rows += '<p class="hint" style="margin-top:8px">Цены «от» — минимальные, по категории «Цирюльник». Точная цена появится, когда выберете категорию мастера в шаге 2.</p>';
+          sum.innerHTML = rows;
+          sum.classList.add("show");
+        } else {
+          sum.classList.remove("show");
+          sum.innerHTML = "";
+        }
+
+        var btn = $("toFormBtn");
+        btn.disabled = !ready();
+        btn.textContent = ready()
+          ? "Продолжить"
+          : (state.rescheduleNum ? "Выберите новую дату и время" : "Выберите услуги, дату и время");
+        renderSticky();
+      }
+
+      function renderSticky(){
+        /* Панель появляется, когда посетитель начал действовать (прокрутка или первый выбор),
+           чтобы не висеть поверх содержимого первого экрана. */
+        var engaged = window.scrollY > 40 || selectedServices().length>0 || state.time!=null;
+        var show = state.view==="flow" && engaged;
+        document.body.classList.toggle("has-bar", show);
+        if(!show) return;
+        var sel = selectedServices();
+        var priceEl = $("sbPrice"), subEl = $("sbSub"), btn = $("sbBtn");
+        priceEl.textContent = sel.length ? fmtTotal() : "Выберите услуги";
+        if(ready()){
+          subEl.textContent = fmtDateFull(state.date)+", начало в "+fmtTime(state.time)+" · "+masterDisplayLabel();
+          btn.textContent = "Продолжить";
+          btn.disabled = false;
+        } else if(!sel.length){
+          subEl.textContent = "Шаг 1 из 3 · услуги";
+          btn.textContent = "Продолжить";
+          btn.disabled = false;
+        } else if(!state.date || state.time==null){
+          subEl.textContent = "Шаг 3 из 3 · дата и время";
+          btn.textContent = "Выбрать время";
+          btn.disabled = false;
+        } else {
+          subEl.textContent = "Проверьте итог ниже";
+          btn.textContent = "Продолжить";
+          btn.disabled = false;
+        }
+        btn.onclick = function(){
+          if(ready()){ $("toFormBtn").click(); return; }
+          if(!selectedServices().length){ openStep("stepSvc"); }
+          else { openStep("stepWhen"); }
+          $("bookCard").scrollIntoView({behavior:"smooth", block:"start"});
+        };
+      }
+
+      function renderAll(){
+        renderServices();
+        renderMasters();
+        renderDates();
+        loadSlots();
+        renderHeads();
+      }
+
+      /* ---------------- step accordion ---------------- */
+      function openStep(id){
+        var steps = document.querySelectorAll(".step");
+        for(var i=0;i<steps.length;i++){
+          var on = steps[i].id===id;
+          steps[i].classList.toggle("open", on);
+          steps[i].querySelector(".step-head").setAttribute("aria-expanded", on?"true":"false");
+        }
+      }
+      var heads = document.querySelectorAll("[data-toggle]");
+      for(var h=0;h<heads.length;h++){
+        heads[h].addEventListener("click", function(){
+          var id = this.getAttribute("data-toggle");
+          var el = $(id);
+          var willOpen = !el.classList.contains("open");
+          var steps = document.querySelectorAll(".step");
+          for(var i=0;i<steps.length;i++){
+            steps[i].classList.remove("open");
+            steps[i].querySelector(".step-head").setAttribute("aria-expanded","false");
+          }
+          if(willOpen){
+            el.classList.add("open");
+            this.setAttribute("aria-expanded","true");
+          }
+        });
+      }
+
+      /* ---------------- contacts & submit ---------------- */
+      function phoneDigits(v){ return v.replace(/\D/g,""); }
+      function formatPhone(v){
+        var d = phoneDigits(v);
+        if(d.charAt(0)==="8") d = "7"+d.slice(1);
+        if(d && d.charAt(0)!=="7") d = "7"+d;
+        d = d.slice(0,11);
+        var out = "+7";
+        if(d.length>1) out += " ("+d.slice(1,4);
+        if(d.length>=4) out += ") "+d.slice(4,7);
+        if(d.length>=7) out += "-"+d.slice(7,9);
+        if(d.length>=9) out += "-"+d.slice(9,11);
+        return out;
+      }
+      $("fPhone").addEventListener("input", function(){
+        this.value = formatPhone(this.value);
+        setFieldError("fPhone","fPhoneErr","");
+      });
+      $("fName").addEventListener("input", function(){ setFieldError("fName","fNameErr",""); });
+
+      function setFieldError(inputId, errId, msg){
+        var inp = $(inputId), err = $(errId);
+        if(msg){
+          err.textContent = msg;
+          err.classList.add("show");
+          inp.setAttribute("aria-invalid","true");
+        } else {
+          err.textContent = "";
+          err.classList.remove("show");
+          inp.removeAttribute("aria-invalid");
+        }
+      }
+
+      function bookingSummaryText(){
+        var sel = selectedServices();
+        return sel.map(function(s){return s.name;}).join(", ")
+          + " · " + masterDisplayLabel()
+          + " · " + fmtDateFull(state.date) + ", начало в " + fmtTime(state.time)
+          + " · " + fmtTotal();
+      }
+
+      function showView(v){
+        state.view = v;
+        $("flowView").hidden = v!=="flow";
+        $("formView").hidden = v!=="form";
+        $("successView").classList.toggle("show", v==="success");
+        renderSticky();
+      }
+
+      $("toFormBtn").addEventListener("click", function(){
+        if(!ready()) return;
+        $("formSummary").textContent = bookingSummaryText();
+        $("formErr").classList.remove("show");
+        setFieldError("fName","fNameErr","");
+        setFieldError("fPhone","fPhoneErr","");
+        showView("form");
+        $("bookCard").scrollIntoView({behavior:"smooth", block:"start"});
+        $("fName").focus();
+      });
+      $("backBtn").addEventListener("click", function(){ showView("flow"); });
+      $("policyLink").addEventListener("click", function(){
+        var box = $("policyBox");
+        var open = box.hidden;
+        box.hidden = !open;
+        this.setAttribute("aria-expanded", open?"true":"false");
+      });
+
+      /* simulated save with re-checks: no double booking, slot must still be free */
+      function saveBooking(booking){
+        return new Promise(function(resolve, reject){
+          setTimeout(function(){
+            var masterId = assignMaster(parseKey(booking.dateKey), booking.start);
+            if(!masterId || masterId!==booking.masterId){
+              reject({code:"taken", message:"Это время только что заняли. Вернитесь к шагу 3 и выберите другое время."});
+              return;
+            }
+            var digits = phoneDigits(booking.phone);
+            for(var i=0;i<store.list.length;i++){
+              var b = store.list[i];
+              if(b.num===state.rescheduleNum) continue;
+              if(phoneDigits(b.phone)===digits && b.dateKey===booking.dateKey
+                 && overlaps(booking.start, booking.start+booking.dur, b.start, b.start+b.dur)){
+                reject({code:"dup", message:"Такая запись уже есть — № K-"+b.num+" на это же время. Похоже, форма отправлена дважды; вторая запись не создана."});
+                return;
+              }
+            }
+            if(state.rescheduleNum){
+              store.list = store.list.filter(function(b){ return b.num!==state.rescheduleNum; });
+              booking.num = state.rescheduleNum;
+            } else {
+              booking.num = store.seq++;
+            }
+            store.list.push(booking);
+            lsSet(LS_BOOK, store);
+            resolve(booking);
+          }, 550);
+        });
+      }
+
+      $("confirmBtn").addEventListener("click", function(){
+        if(state.saving) return; /* защита от повторной отправки */
+        var name = $("fName").value.trim();
+        var digits = phoneDigits($("fPhone").value);
+        var err = $("formErr");
+        err.classList.remove("show");
+        var ok = true;
+        if(name.length < 2){
+          setFieldError("fName","fNameErr","Укажите имя — минимум две буквы, чтобы мастер знал, как к вам обращаться.");
+          ok = false;
+        }
+        if(digits.length !== 11){
+          setFieldError("fPhone","fPhoneErr","Не удалось распознать номер — проверьте цифры и попробуйте ввести ещё раз.");
+          ok = false;
+        }
+        if(!ok){
+          (name.length<2 ? $("fName") : $("fPhone")).focus();
+          return;
+        }
+        var masterId = assignMaster(state.date, state.time);
+        if(!masterId){
+          err.textContent = "Это время только что заняли. Вернитесь к выбору и укажите другое время.";
+          err.classList.add("show");
+          return;
+        }
+        var btn = $("confirmBtn");
+        state.saving = true;
+        btn.disabled = true;
+        btn.textContent = "Сохраняем запись…";
+
+        var booking = {
+          num:null,
+          masterId:masterId,
+          masterName:masterLabel(masterId),
+          dateKey:dateKey(state.date),
+          start:state.time,
+          dur:totalDur(),
+          services:selectedServices().map(function(s){ return s.name; }),
+          price:totalPrice(),
+          from:priceIsFrom(),
+          name:name,
+          phone:$("fPhone").value,
+          comment:$("fComment").value.trim()
+        };
+
+        saveBooking(booking).then(function(saved){
+          state.saving = false;
+          btn.disabled = false;
+          btn.textContent = "Подтвердить запись";
+          state.lastBooking = saved;
+          state.rescheduleNum = null;
+          saveDraft();
+          renderSuccess(saved, false);
+          showView("success");
+          $("bookCard").scrollIntoView({behavior:"smooth", block:"start"});
+        }).catch(function(e){
+          state.saving = false;
+          btn.disabled = false;
+          btn.textContent = "Подтвердить запись";
+          err.textContent = (e && e.message) ? e.message : "Не удалось сохранить запись. Проверьте интернет и попробуйте ещё раз — ваш выбор не потерян.";
+          err.classList.add("show");
+        });
+      });
+
+      /* ---------------- success screen ---------------- */
+      function renderSuccess(b, cancelled){
+        var d = parseKey(b.dateKey);
+        $("successView").classList.toggle("cancelled", !!cancelled);
+        $("okSeal").innerHTML = cancelled
+          ? '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>'
+          : '<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+        $("okTitle").textContent = cancelled ? "Запись отменена" : "Вы записаны";
+        $("okNum").textContent = "Запись K-"+b.num;
+        var rows = "";
+        rows += '<div class="sum-row"><span>Услуги</span><b>'+esc(b.services.join(", "))+'</b></div>';
+        rows += '<div class="sum-row"><span>Мастер</span><b>'+esc(b.masterName)+'</b></div>';
+        rows += '<div class="sum-row"><span>Дата</span><b>'+fmtDateFull(d)+'</b></div>';
+        rows += '<div class="sum-row"><span>Начало</span><b>'+fmtTime(b.start)+'</b></div>';
+        rows += '<div class="sum-row"><span>Клиент</span><b>'+esc(b.name)+'</b></div>';
+        rows += '<div class="sum-row total"><span>К оплате</span><b>'+(b.from?"от ":"")+fmtPrice(b.price)+'</b></div>';
+        $("okDetails").innerHTML = rows;
+        $("okNote").textContent = cancelled
+          ? "Время снова свободно. Если захотите записаться ещё раз — кнопка ниже."
+          : "Запись сохранена и останется здесь после обновления страницы. Длительность визита уточняется у мастера. Если планы изменятся, перенесите или отмените запись прямо на этом экране — или позвоните нам: +7 917 181-04-84.";
+        $("okActions").style.display = cancelled ? "none" : "";
+        var again = $("againBtn");
+        again.textContent = cancelled ? "Записаться снова" : "Новая запись";
+        if(cancelled){
+          var wrap = $("okActions");
+          wrap.style.display = "";
+          $("icsBtn").style.display = "none";
+          $("reschedBtn").style.display = "none";
+          $("cancelBtn").style.display = "none";
+        } else {
+          $("icsBtn").style.display = "";
+          $("reschedBtn").style.display = "";
+          $("cancelBtn").style.display = "";
+          armCancel(false);
+        }
+      }
+
+      function icsEscape(s){ return String(s).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\n/g,"\\n"); }
+      function icsStamp(dateKeyStr, minutes){
+        var p = dateKeyStr.split("-");
+        var dt = new Date(Date.UTC(+p[0], +p[1]-1, +p[2], 0, minutes - 4*60)); /* Europe/Samara = UTC+4 */
+        return dt.getUTCFullYear()+pad(dt.getUTCMonth()+1)+pad(dt.getUTCDate())+"T"
+          + pad(dt.getUTCHours())+pad(dt.getUTCMinutes())+"00Z";
+      }
+      $("icsBtn").addEventListener("click", function(){
+        var b = state.lastBooking;
+        if(!b) return;
+        var ics = [
+          "BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Knyaz//Booking//RU",
+          "BEGIN:VEVENT",
+          "UID:k-"+b.num+"@knyaz-booking",
+          "DTSTAMP:"+icsStamp(b.dateKey, b.start),
+          "DTSTART:"+icsStamp(b.dateKey, b.start),
+          "DTEND:"+icsStamp(b.dateKey, b.start + b.dur),
+          "SUMMARY:"+icsEscape("Цирюльня «Князь» — "+b.services.join(", ")),
+          "LOCATION:"+icsEscape("Астрахань, пл. Свободы, 45, 1 этаж"),
+          "DESCRIPTION:"+icsEscape("Запись K-"+b.num+". Мастер: "+b.masterName+". К оплате: "+(b.from?"от ":"")+b.price+" ₽. Тел.: +7 917 181-04-84"),
+          "END:VEVENT","END:VCALENDAR"
+        ].join("\r\n");
+        var blob = new Blob([ics], {type:"text/calendar;charset=utf-8"});
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "knyaz-zapis-K-"+b.num+".ics";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+      });
+
+      $("reschedBtn").addEventListener("click", function(){
+        var b = state.lastBooking;
+        if(!b) return;
+        state.rescheduleNum = b.num;
+        state.services = {};
+        b.services.forEach(function(n){
+          for(var i=0;i<SERVICES.length;i++) if(SERVICES[i].name===n) state.services[SERVICES[i].id]=true;
+        });
+        if(masterById(b.masterId)) state.master = b.masterId;
+        state.date = tzNow().date;
+        state.time = null;
+        saveDraft();
+        showView("flow");
+        openStep("stepWhen");
+        showNotice("Перенос записи K-"+b.num+": выберите новую дату и время, затем подтвердите — старая запись заменится новой.");
+        renderAll();
+        $("bookCard").scrollIntoView({behavior:"smooth", block:"start"});
+      });
+
+      var cancelArmed = false;
+      function armCancel(on){
+        cancelArmed = on;
+        var btn = $("cancelBtn");
+        btn.classList.toggle("armed", on);
+        btn.textContent = on ? "Точно отменить? Нажмите ещё раз" : "Отменить запись";
+      }
+      $("cancelBtn").addEventListener("click", function(){
+        var b = state.lastBooking;
+        if(!b) return;
+        if(!cancelArmed){ armCancel(true); return; }
+        store.list = store.list.filter(function(x){ return x.num!==b.num; });
+        lsSet(LS_BOOK, store);
+        if(state.rescheduleNum===b.num) state.rescheduleNum = null;
+        saveDraft();
+        renderSuccess(b, true);
+      });
+
+      $("againBtn").addEventListener("click", function(){
+        state.date = tzNow().date; state.time = null; state.services = {};
+        state.rescheduleNum = null; state.lastBooking = null;
+        $("fName").value = ""; $("fPhone").value = ""; $("fComment").value = "";
+        saveDraft();
+        showView("flow");
+        openStep("stepSvc");
+        renderAll();
+        $("bookCard").scrollIntoView({behavior:"smooth", block:"start"});
+      });
+
+      /* ---------------- open/closed indicator ---------------- */
+      function renderOpenState(){
+        var now = tzNow();
+        var open = now.minutes >= OPEN && now.minutes < CLOSE;
+        $("openState").innerHTML = open
+          ? '<span class="open-now">Открыто</span> · сегодня до 21:00'
+          : '<span class="closed-now">Закрыто</span> · ежедневно 10:00–21:00';
+      }
+
+      /* ---------------- price list ---------------- */
+      var priceCat = "barber";
+      function renderPrice(){
+        var html = "";
+        SVC_GROUPS.forEach(function(g){
+          html += '<div class="price-group">'+g.name+'</div>';
+          g.ids.forEach(function(id){
+            var s = svcById(id);
+            if(!s) return;
+            html += '<div class="price-row"><span class="pn">'+esc(s.name)+'</span><span class="pdots" aria-hidden="true"></span><span class="pp">'+fmtPrice(s.prices[priceCat])+'</span></div>';
+          });
+        });
+        $("priceList").innerHTML = html;
+        var tabs = document.querySelectorAll("[data-ptab]");
+        for(var i=0;i<tabs.length;i++){
+          var on = tabs[i].getAttribute("data-ptab")===priceCat;
+          tabs[i].classList.toggle("sel", on);
+          tabs[i].setAttribute("aria-selected", on?"true":"false");
+        }
+      }
+      var ptabs = document.querySelectorAll("[data-ptab]");
+      for(var pi=0;pi<ptabs.length;pi++){
+        ptabs[pi].addEventListener("click", function(){
+          priceCat = this.getAttribute("data-ptab");
+          renderPrice();
+        });
+      }
+      $("priceToggle").addEventListener("click", function(){
+        var open = $("priceCard").classList.toggle("open");
+        this.setAttribute("aria-expanded", open?"true":"false");
+      });
+
+      /* ---------------- init ---------------- */
+      window.addEventListener("scroll", function(){ renderSticky(); }, {passive:true});
+      var hadDraft = restoreDraft();
+      for(var gi2=0; gi2<SVC_GROUPS.length; gi2++){
+        var grpHas = SVC_GROUPS[gi2].ids.some(function(id){ return state.services[id]; });
+        if(grpHas){ svcOpen = SVC_GROUPS[gi2].id; break; }
+      }
+      if(!state.date) state.date = tzNow().date;
+      if(state.date && state.time!=null && !slotFree(state.date, state.time)){
+        state.time = null;
+        showNotice("Сохранённое время из прошлой попытки стало недоступно — выберите другое в шаге 3.");
+        openStep("stepWhen");
+      }
+      if(hadDraft && state.rescheduleNum){
+        showNotice("Вы переносили запись K-"+state.rescheduleNum+" — выберите новую дату и время, чтобы завершить перенос.");
+        openStep("stepWhen");
+      }
+      renderOpenState();
+      renderPrice();
+      showView("flow");
+      renderAll();
+    })();
+    </script>
+  </body>
+</html>
